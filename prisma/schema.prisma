@@ -1,0 +1,54 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+}
+
+enum Role {
+  Student
+  Teacher
+  Admin
+}
+
+model User {
+  id        Int         @id @default(autoincrement())
+  name      String      @unique @db.VarChar(40)
+  password  String      @db.VarChar(250)
+  role      Role
+  courses   Course[]
+  questions Question[]
+  answers   Answer[]
+  received_payment Int? @default(0)
+}
+
+model Course {
+  id        Int     @id @default(autoincrement())
+  title     String  @unique @db.VarChar(500)
+  duration  Int
+  teacher   User    @relation(fields: [teacherId], references: [id])
+  teacherId Int
+  questions Question[]
+}
+
+model Question {
+  id        Int     @id @default(autoincrement())
+  text      String  @db.VarChar(2000)
+  course    Course  @relation(fields: [courseId], references: [id])
+  courseId  Int
+  student   User    @relation(fields: [studentId], references: [id])
+  studentId Int
+  answer    Answer?
+}
+
+model Answer {
+  id          Int       @id @default(autoincrement())
+  text        String    @db.VarChar(2000)
+  question    Question  @relation(fields: [questionId], references: [id])
+  questionId  Int       @unique
+  teacher     User      @relation(fields: [teacherId], references: [id])
+  teacherId   Int
+}
