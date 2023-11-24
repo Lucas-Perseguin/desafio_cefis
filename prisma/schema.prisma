@@ -23,25 +23,31 @@ model User {
   questions Question[]
   answers   Answer[]
   received_payment Int? @default(0)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
 }
 
 model Course {
-  id        Int     @id @default(autoincrement())
-  title     String  @unique @db.VarChar(500)
+  id        Int       @id @default(autoincrement())
+  title     String    @unique @db.VarChar(500)
   duration  Int
-  teacher   User    @relation(fields: [teacherId], references: [id])
+  teacher   User      @relation(fields: [teacherId], references: [id])
   teacherId Int
   questions Question[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 model Question {
-  id        Int     @id @default(autoincrement())
-  text      String  @db.VarChar(2000)
-  course    Course  @relation(fields: [courseId], references: [id])
+  id        Int       @id @default(autoincrement())
+  text      String    @db.VarChar(2000)
+  course    Course    @relation(fields: [courseId], references: [id])
   courseId  Int
-  student   User    @relation(fields: [studentId], references: [id])
+  student   User      @relation(fields: [studentId], references: [id])
   studentId Int
   answer    Answer?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 model Answer {
@@ -51,4 +57,6 @@ model Answer {
   questionId  Int       @unique
   teacher     User      @relation(fields: [teacherId], references: [id])
   teacherId   Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
