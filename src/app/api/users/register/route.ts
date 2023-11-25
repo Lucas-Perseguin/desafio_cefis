@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
   }
 
   const hashedPassword = await bcrypt.hash(body.password, 12);
-  await prisma.user.create({
+  const newUser = await prisma.user.create({
     data: {
       name: body.name,
       password: hashedPassword,
@@ -32,9 +32,13 @@ export async function POST(request: NextRequest) {
   });
 
   const privateKey = process.env.JWT_SECRET as String;
-  const token = jwt.sign({ name: body.name }, `${privateKey}`, {
-    expiresIn: "7d",
-  });
+  const token = jwt.sign(
+    { name: body.name, role: newUser.role },
+    `${privateKey}`,
+    {
+      expiresIn: "7d",
+    }
+  );
 
   return NextResponse.json({ token }, { status: 201 });
 }

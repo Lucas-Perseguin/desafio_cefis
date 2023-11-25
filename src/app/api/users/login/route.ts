@@ -31,9 +31,13 @@ export async function POST(request: NextRequest) {
   }
 
   const privateKey = process.env.JWT_SECRET as String;
-  const token = jwt.sign({ name: body.name }, `${privateKey}`, {
-    expiresIn: "7d",
-  });
+  const token = jwt.sign(
+    { name: body.name, role: user.role },
+    `${privateKey}`,
+    {
+      expiresIn: "7d",
+    }
+  );
 
   return NextResponse.json({ token }, { status: 201 });
 }

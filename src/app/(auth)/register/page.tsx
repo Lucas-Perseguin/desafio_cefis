@@ -5,16 +5,42 @@ import { useState } from "react";
 import axios from "axios";
 import { setCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
+import jwt from "jsonwebtoken";
 
 export default function Register() {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
+  const [sending, setSending] = useState(false);
   const router = useRouter();
 
   async function handleSubmit() {
+    setSending(true);
+    if (
+      name.length < 5 ||
+      name.length > 40 ||
+      password.length < 5 ||
+      password.length > 40
+    ) {
+      alert(
+        "A senha e o nome de Usuário devem ter no mínimo 5 e no máximo 40 caracteres"
+      );
+      return;
+    }
     try {
       const res = await axios.post("/api/users/register", { name, password });
+      const payload = jwt.decode(res.data.token) as {
+        name: String;
+        role: String;
+      };
       setCookie("token", res.data.token, {
+        secure: true,
+        maxAge: 60 * 60 * 24 * 7,
+      });
+      setCookie("name", payload.name, {
+        secure: true,
+        maxAge: 60 * 60 * 24 * 7,
+      });
+      setCookie("role", payload.role, {
         secure: true,
         maxAge: 60 * 60 * 24 * 7,
       });
@@ -22,12 +48,13 @@ export default function Register() {
     } catch (error: any) {
       alert(error.response.data.message);
     }
+    setSending(false);
     return;
   }
 
   return (
-    <div className="relative flex flex-col items-center justify-center min-h-screen overflow-hidden">
-      <div className="w-full p-6 bg-white rounded-md shadow-md lg:max-w-xl">
+    <div className="relative flex flex-col items-center justify-center min-h-screen overflow-hidden bg-white">
+      <div className="w-full p-6 bg-white rounded-3xl shadow-xl lg:max-w-xl">
         <h1 className="text-3xl font-bold text-center text-gray-700">
           CRIAR CONTA
         </h1>
@@ -63,6 +90,7 @@ export default function Register() {
           <div className="mt-2">
             <button
               onClick={handleSubmit}
+              disabled={sending}
               className="w-full px-4 py-2 tracking-wide text-white transition-colors duration-200 transform bg-gray-700 rounded-md hover:bg-gray-600 focus:outline-none focus:bg-gray-600"
             >
               Registrar
