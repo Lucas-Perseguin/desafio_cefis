@@ -29,7 +29,7 @@ export default function Header() {
         <div
           className={`absolute ${
             openModal ? "flex" : "hidden"
-          } w-96 h-40 top-16 right-4 bg-white shadow-lg rounded-2xl pt-10 pb-4 px-3 justify-between items-center flex-col`}
+          } w-80 h-40 top-16 right-4 bg-white shadow-lg rounded-2xl pt-10 pb-4 px-3 justify-between items-center flex-col`}
         >
           <IoCloseCircleOutline
             className="absolute top-3 right-3 h-7 w-7 hover:cursor-pointer"
